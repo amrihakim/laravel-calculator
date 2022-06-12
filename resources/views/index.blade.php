@@ -20,33 +20,48 @@
                     <form action="{{ route('calculator.store')}}" method="POST" id="calculator" onsubmit="divideByZero()">
                         @csrf
                         {{-- input bilangan pertama --}}
-                        <input class="form-control my-2" id="num1" name="num1" type="number" required value="{{ old('num1') }}">
+                        <input class="form-control my-2" id="num1" name="num1" type="number" required value="{{ isset($hasil->num1) ? $hasil->num1 : ''}}">
 
                         {{-- input bilangan kedua --}}
-                        <input class="form-control my-2" id="num2" name="num2" type="number" value="{{ old('num2') }}">
+                        <input class="form-control my-2" id="num2" name="num2" type="number" value="{{ isset($hasil->num2) ? $hasil->num2 : ''}}">
 
                         {{-- select operator --}}
-                        <select class="form-select my-2" name="ops" id="ops">
-                            <option value="+" {{ old('ops') == '+' ? 'selected' : '' }}>+</option>
-                            <option value="-" {{ old('ops') == '-' ? 'selected' : '' }}>-</option>
-                            <option value="*" {{ old('ops') == '*' ? 'selected' : '' }}>x</option>
-                            <option value="/" {{ old('ops') == '/' ? 'selected' : '' }}>-:-</option>
-                            <option value="%" {{ old('ops') == '%' ? 'selected' : '' }}>%</option>
-                            <option value="^" {{ old('ops') == '^' ? 'selected' : '' }}>^</option>
+                        <select class="form-select my-2" name="ops" id="option">
+                            <option class="ops" value="+" {{ isset($hasil->ops) ? ($hasil->ops == '+' ? 'id=ops selected' : '') : '' }}>+</option>
+                            <option class="ops" value="-" {{ isset($hasil->ops) ? ($hasil->ops == '-' ? 'id=ops selected' : '') : '' }}>-</option>
+                            <option class="ops" value="*" {{ isset($hasil->ops) ? ($hasil->ops == '*' ? 'id=ops selected' : '') : '' }}>x</option>
+                            <option class="ops" value="/" {{ isset($hasil->ops) ? ($hasil->ops == '/' ? 'id=ops selected' : '') : '' }}>-:-</option>
+                            <option class="ops" value="%" {{ isset($hasil->ops) ? ($hasil->ops == '%' ? 'id=ops selected' : '') : '' }}>%</option>
+                            <option class="ops" value="^" {{ isset($hasil->ops) ? ($hasil->ops == '^' ? 'id=ops selected' : '') : '' }}>^</option>
                         </select>
 
                         {{-- jika ada hasil terakhir maka tampilkan --}}
                         @if (isset($hasil))
-                        <input class="form-control my-2" id="hasil" name="num2" disabled type="text" value="{{ $hasil }}">
+                        <input class="form-control my-2" id="hasil" name="result" disabled type="text" value="{{ isset($hasil->result) ? $hasil->result : '' }}">
                         @endif
 
                         {{-- start div button --}}
                         <div class="float-end mt-2">
+                            @if (isset($hasil))
                             {{-- button untuk meneruskan hasil ke dalam input --}}
-                            <button class="btn btn-dark" onclick="document.getElementById('calculator').reset();document.getElementById('num1').value = <?php echo $hasil?>; document.getElementById('hasil').value =null; document.getElementById('num2').value = null; return false;    ">Continue</button>
+                            <button class="btn btn-dark" onclick="
+                            document.getElementById('num1').value = @php echo $hasil->result @endphp;
+                            document.getElementById('hasil').value = null;
+                            document.getElementById('num2').value = null;
+                            document.getElementById('ops').selected = false;
+                            return false;
+                            ">Continue</button>
+                            @endif
 
                             {{-- button untuk reset form --}}
-                            <button class="btn btn-light" onclick="document.getElementById('calculator').reset(); document.getElementById('num1').value = null; document.getElementById('num2').value = null; document.getElementById('hasil').value =null;  return false;" type="reset">Reset</button>
+                            <button class="btn btn-light" onclick="
+                            document.getElementById('calculator').reset();
+                            document.getElementById('num1').value = null;
+                            document.getElementById('num2').value = null;
+                            document.getElementById('ops').selected = false;
+                            document.getElementById('hasil').value =null;
+                            return false;"
+                            type="reset">Reset</button>
 
                             {{-- button submit --}}
                             <button class="btn btn-primary" type="submit">Submit</button>
@@ -86,7 +101,7 @@
     {{-- fungsi javascript yang muncul saat ada bilangan dibagi 0 --}}
     <script>
         function divideByZero(){
-            if(document.getElementById('num2').value == 0 && document.getElementById('ops').value == '/' ) {
+            if(document.getElementById('num2').value == 0 && document.getElementById('option').value == '/' ) {
                 alert('Cannot divide by zero!');
             }
         }

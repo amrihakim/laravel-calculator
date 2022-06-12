@@ -17,16 +17,7 @@ class CalculatorController extends Controller
         $riwayat = Calculator::orderBy('id', 'DESC')->get();
 
         // mengambil data kolom hasil terakhir yang ada di tabel calculators
-        $result = Calculator::orderBy('id', 'DESC')->select('result')->first();
-
-        // jika $result berisi null
-        if (is_null($result))
-        {
-            $hasil  = $result;
-        }
-        else {
-            $hasil = $result->result;
-        }
+        $hasil = Calculator::orderBy('id', 'DESC')->first();
 
         return view('index', [
             'riwayat' => $riwayat,
@@ -71,7 +62,7 @@ class CalculatorController extends Controller
                 // jika ada bilangan dibagi 0
                 if($bil2 == 0)
                 {
-                    $hasil = 'x';
+                    return redirect(route('calculator.index'));
                 }
                 else {
                     $hasil = $bil1/$bil2;
