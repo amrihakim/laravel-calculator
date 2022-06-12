@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\DB;
 
 class CalculatorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
+        // mengambil semua data di dalam tabel calculators
         $riwayat = Calculator::orderBy('id', 'DESC')->get();
+
+        // mengambil data kolom hasil terakhir yang ada di tabel calculators
         $result = Calculator::orderBy('id', 'DESC')->select('result')->first();
-        // dd($result);
+
+        // jika $result berisi null
         if (is_null($result))
         {
             $hasil  = $result;
@@ -27,31 +27,16 @@ class CalculatorController extends Controller
         else {
             $hasil = $result->result;
         }
-        // dd($hasil);
+
         return view('index', [
             'riwayat' => $riwayat,
             'hasil' => $hasil
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
+        // validasi input yang ada di view index
         $request->validate([
             'num1'     => 'required',
             'num2'     => 'required',
@@ -59,22 +44,31 @@ class CalculatorController extends Controller
         ]);
 
         try {
-            // dd($request->all());
-
+            // deklarasi variabel $request = data yang diinputkan
             $bil1 = $request->num1;
             $bil2 = $request->num2;
             $ops = $request->ops;
+
+            // percabangan berdasarkan operasi yang diinputkan
             switch ($ops) {
+                // tambah
                 case '+':
                 $hasil = $bil1+$bil2;
                 break;
+
+                // kurang
                 case '-':
                 $hasil = $bil1-$bil2;
                 break;
+
+                // kali
                 case '*':
                 $hasil = $bil1*$bil2;
                 break;
+
+                // bagi
                 case '/':
+                // jika ada bilangan dibagi 0
                 if($bil2 == 0)
                 {
                     $hasil = 'x';
@@ -83,14 +77,19 @@ class CalculatorController extends Controller
                     $hasil = $bil1/$bil2;
                 }
                 break;
+
+                // modulo
                 case '%':
                 $hasil = $bil1%$bil2;
                 break;
+
+                // pangkat
                 case '^':
                 $hasil = pow($bil1,$bil2);
                 break;
             }
 
+            // memasukkan data ke dalam database
             Calculator::create([
                 'num1' => $bil1,
                 'num2' => $bil2,
@@ -98,56 +97,12 @@ class CalculatorController extends Controller
                 'result' => $hasil,
             ]);
         } catch (\Throwable $th) {
-            // dd($th);
-            return back()->withInput()->withToastError('Something went wrong');
+            // jika terdapat error
+            return back();
         }
 
+        // dikembalikan ke index saat kode sudah dijalankan
         return redirect(route('calculator.index'));
 
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }

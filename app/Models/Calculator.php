@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Calculator extends Model
 {
-    use HasFactory;
-
+    // inisialisasi tabel
     protected $table = 'calculators';
+
+    // inisialisasi kolom
     protected $fillable = [
         'num1',
         'num2',
